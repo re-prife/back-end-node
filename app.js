@@ -35,40 +35,47 @@ io.on('connection', function(socket) {
     });
 
     //집안일 인증 요청
-    socket.on('chore-certify-request', function(value){
+    socket.on('certify chore', function(value){
         console.log('집안일 인증 요청');
 
         // room에 join한다
         socket.join(value.groupId);
 
         // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-        socket.braodcast.to(groupId).emit('chore certify request : ', value.data);
+        socket.braodcast.to(groupId).emit('certify chore', value.data);
     });
 
     //집안일 인증 응답
-    socket.on('chore certify response', function(data){
+    socket.on('response chore', function(data){
         console.log('집안일 인증 응답 : ', data);
 
-        var groupId = socket.groupId = 
-
         // room에 join한다
-        socket.join(groupId);
+        socket.join(value.groupId);
 
-        // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-        socket.braodcast.emit('chore certify response', data.data);
+        // userId한테만 메세지 전송
+        io.to(data.userId).emit('response chore', data.data);
     });
 
     //심부름 추가
     socket.on('add quest', function(data){
         console.log('심부름 추가 : ', data);
 
-        var groupId = socket.groupId = 
-
         // room에 join한다
-        socket.join(groupId);
+        socket.join(value.groupId);
 
         // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-        socket.braodcast.emit('add quest', data.data);
+        socket.braodcast.to(groupId).emit('add quest', data.data);
+    });
+
+    //심부름 수락 알림
+    socket.on('request quest', function(data){
+        console.log('심부름 추가 : ', data);
+
+        // room에 join한다
+        socket.join(value.groupId);
+
+        // userId한테만 메세지 전송
+        io.to(data.userId).emit('request quest', data.data);
     });
 });
 
