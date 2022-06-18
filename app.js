@@ -26,7 +26,6 @@ io.on('connection', function(socket) {
     //연결이 끊겼을때
     socket.on('disconnect', function(){
         console.log('클라이언트 접속 해제 : ', socket.id);
-        socket.leave(groupId);  //그룹 아이디로 되어있는 room과의 연결 끊음
         clearInterval(socket.interval); //socket과 연결 끊음
     });
 
