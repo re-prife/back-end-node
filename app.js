@@ -5,7 +5,7 @@ var io = require('socket.io')(server);
 const clients = [];
 app.get('/', function (req, res) {
     res.send('Freemily Node Server')
-    //res.sendFile(__dirname + '/index.html');
+    res.sendFile(__dirname + '/index.html');
 });
 
 io.on('connection', function (socket) {
@@ -37,7 +37,7 @@ io.on('connection', function (socket) {
 
     //집안일 인증 요청
     socket.on('certifyChore', function (value) {
-        console.log('집안일 인증 요청');
+        console.log('집안일 인증 요청 :', value);
 
         // room에 join되어 있는 클라이언트에게 메시지를 전송한다
         socket.broadcast.to(groupId).emit('certifyChore', value.data);
