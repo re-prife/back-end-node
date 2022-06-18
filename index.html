@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Socket.io Test</title>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <script>
+        var socket = io.connect('http://localhost:3000');
+
+        /* userId 저장을 위한 전송 이벤트 */
+        socket.emit('saveInfo', {
+            userId: 1
+        })
+
+        /* 집안일 인증 요청 */
+        const certifyChoreData = {
+            data: {
+                category: "",
+                userNickname: "",
+                title: ""
+            }
+        }
+        // 집안일 인증 요청 전송
+        socket.emit('certifyChore', certifyChoreData);
+        // 집안일 인증 요청 받기
+        socket.on('certifyChore', certifyChoreData => {
+            console.log(certifyChoreData);
+        });
+
+        /* 집안일 인증 승인 */
+        const acceptChoreData = {
+            requesterId: 1,
+            data: {
+                category: "",
+                title: ""
+            }
+        }
+        // 집안일 인증 수락 전송
+        socket.emit('acceptChore', acceptChoreData);
+        // 집안일 인승 수락 받기 
+        socket.on('acceptChore', acceptChoreData => {
+            console.log(acceptChoreData);
+        });
+
+        /* 심부름 요청 */
+        const addQuestData = {
+            data: {
+                userNickname: "",
+                title: ""
+            }
+        }
+        // 심부름 요청 전송
+        socket.emit('addQuest', addQuestData);
+        // 심부름 요청 받기
+        socket.on('addQuest', addQuestData => {
+            console.log(addQuestData);
+        });
+
+        /* 심부름 승인 */
+        const acceptQuestData = {
+            requesterId: 1,
+            data: {
+                userNickname: "",
+                title: ""
+            }
+        }
+        // 심부름 수락 전송
+        socket.emit('acceptQuest', acceptQuestData);
+        // 심부름 수락 받기
+        socket.on('acceptQuest', acceptQuestData => {
+            console.log(acceptQuestData);
+        });
+    </script>
+</body>
+
+</html>

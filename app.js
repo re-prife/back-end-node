@@ -1,84 +1,77 @@
-var app = require('express')();
+const express = require('express');
+const app = express();
 var server = require('http').createServer(app);
-const EventEmitter = require('events');
-// http server를 socket.io server로 upgrade한다
 var io = require('socket.io')(server);
-var event = new EventEmitter();
-
-app.get('/', function(req, res) {
-    //query string으로 해당 값 받음
-    let eventType = req.query.eventType;    //event type : 심부름 추가/수락, 집안일 인증/응답
-    let userId = req.query.userId;  //회원 ID
-    let groupId = req.query.groupId;    //그룹 ID
-    let data = req.body;    //안드로이드에서 알림시 필요한 데이터
-
-    //이벤트 호출(userId, groupId, data를 객체 형태로 넘김)
-    event.emit(eventType, {
-        userId : userId,
-        groupId : groupId,
-        data : data
-    });
+const clients = [];
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/index.html');
 });
 
-// 기본 namespace에 접속
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
+    let groupId;
+    console.log('클라이언트 접속');
 
-    //연결이 끊겼을때
-    socket.on('disconnect', function(){
-        console.log('클라이언트 접속 해제 : ', socket.id);
+    socket.on('disconnect', function () {
+        console.log('클라이언트 접속 해제');
+        const index = clients.findIndex(e => e.id == socket.id);
+        clients.splice(index, 1);
         clearInterval(socket.interval); //socket과 연결 끊음
     });
 
-    //에러가 났을때
-    socket.on('error', function(err){
+    socket.on('error', function (err) {
         console.error(err);
     });
 
+    // userId와 socket id 저장 용도 
+    socket.on('saveInfo', (data) => {
+        const clientInfo = new Object();
+        clientInfo.userId = data.userId;
+        clientInfo.groupId = data.groupId;
+        clientInfo.id = socket.id;
+        console.log(clientInfo);
+        clients.push(clientInfo);
+        groupId = data.groupId;
+        socket.join(groupId);
+    })
+
     //집안일 인증 요청
-    socket.on('certify-chore', function(value){
+    socket.on('certifyChore', function (value) {
         console.log('집안일 인증 요청');
 
-        // room에 join한다
-        socket.join(value.groupId);
-
         // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-        socket.braodcast.to(groupId).emit('certify-chore', value.data);
+        socket.broadcast.to(groupId).emit('certifyChore', value.data);
     });
 
     //집안일 인증 응답
-    socket.on('response-chore', function(value){
+    socket.on('acceptChore', function (value) {
         console.log('집안일 인증 응답 : ', value);
 
-        // room에 join한다
-        socket.join(value.groupId);
+        // 집안일 담당자의 socket id 찾기
+        const client = clients.find(e => e.userId == value.requesterId);
 
         // 특정 user한테만 메세지 전송
-        io.to(data.userId).emit('response-chore', value.data);
+        io.to(client.id).emit('acceptChore', value.data);
     });
 
     //심부름 추가
-    socket.on('add-quest', function(value){
+    socket.on('addQuest', function (value) {
         console.log('심부름 추가 : ', value);
 
-        // room에 join한다
-        socket.join(value.groupId);
-
-        // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-        socket.braodcast.to(groupId).emit('add-quest', value.data);
+        socket.broadcast.to(groupId).emit('addQuest', value.data);
     });
 
     //심부름 수락 알림
-    socket.on('request-quest', function(value){
+    socket.on('acceptQuest', function (value) {
         console.log('심부름 승인 : ', value);
 
-        // room에 join한다
-        socket.join(value.groupId);
+        //심부름 요청자의 socket id 찾기
+        const client = clients.find(e => e.userId == value.requesterId);
 
         // userId한테만 메세지 전송
-        io.to(data.userId).emit('request-quest', value.data);
+        io.to(client.id).emit('acceptQuest', value.data);
     });
 });
 
-server.listen(3000, function() {
-  console.log('Socket IO server listening on port 3000');
+server.listen(3000, function () {
+    console.log('Socket IO server listening on port 3000');
 });
