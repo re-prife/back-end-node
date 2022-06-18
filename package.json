@@ -1,7 +1,7 @@
 {
   "name": "socket-notifaction",
   "version": "1.0.0",
-  "description": "",
+  "description": "| http://52.204.65.160:3000",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,6 +10,16 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
+    "pm2": "^5.2.0",
     "socket.io": "^4.5.1"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/re-prife/back-end-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/re-prife/back-end-node/issues"
+  },
+  "homepage": "https://github.com/re-prife/back-end-node#readme"
 }
