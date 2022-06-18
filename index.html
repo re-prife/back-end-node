@@ -13,8 +13,11 @@
         var socket = io.connect('http://localhost:3000');
 
         /* userId 저장을 위한 전송 이벤트 */
+        // userId는 socket id 구별하기 위해 필요
+        // groupId는 소켓 내 룸 생성 시 필요
         socket.emit('saveInfo', {
-            userId: 1
+            userId: 1,
+            groupId : 1
         })
 
         /* 집안일 인증 요청 */
