@@ -4,6 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 const clients = [];
 app.get('/', function (req, res) {
+    res.send('Freemily Node Server')
     //res.sendFile(__dirname + '/index.html');
 });
 
