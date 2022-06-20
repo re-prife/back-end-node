@@ -4,8 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 const clients = [];
 app.get('/', function (req, res) {
-    res.send('Freemily Node Server')
-    res.sendFile(__dirname + '/index.html');
+    res.send('Freemily Node Server');
 });
 
 io.on('connection', function (socket) {
@@ -58,7 +57,13 @@ io.on('connection', function (socket) {
     socket.on('addQuest', function (value) {
         console.log('심부름 추가 : ', value);
 
-        socket.broadcast.to(groupId).emit('addQuest', value.data);
+        for (i of value.userIds) {
+            const client = clients.find(e => e.userId == i);
+            console.log("전송할 client :", client)
+            if (client === undefined) continue;
+            io.to(client.id).emit('acceptQuest', value.data);
+        }
+
     });
 
     //심부름 수락 알림
