@@ -40,7 +40,7 @@ io.on('connection', function (socket) {
         console.log('집안일 인증 요청 :', value);
 
         // room에 join되어 있는 클라이언트에게 메시지를 전송한다
-        socket.broadcast.to(groupId).emit('certifyChore', value.data);
+        socket.broadcast.to(groupId).emit('certifyChore', value);
     });
 
     //집안일 인증 응답
