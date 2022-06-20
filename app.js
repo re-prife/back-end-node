@@ -61,7 +61,7 @@ io.on('connection', function (socket) {
             const client = clients.find(e => e.userId == i);
             console.log("전송할 client :", client)
             if (client === undefined) continue;
-            io.to(client.id).emit('acceptQuest', value.data);
+            io.to(client.id).emit('addQuest', value.data);
         }
 
     });
