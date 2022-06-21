@@ -50,7 +50,7 @@ io.on('connection', function (socket) {
         const client = clients.find(e => e.userId == value.requesterId);
 
         // 특정 user한테만 메세지 전송
-        io.to(client.id).emit('acceptChore', value.data);
+        io.to(client.id).emit('acceptChore', value);
     });
 
     //심부름 추가
